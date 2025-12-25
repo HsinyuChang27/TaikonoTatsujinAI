@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太鼓之達人 AI 特別版</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">加載中</div>
+    </div>
+    
+    <div class="game-container">
+        <div class="start-screen" id="startScreen">
+            <button id="startBtn" class="start-btn"></button>
+        </div>
+        
+        <button id="restartBtn" class="restart-btn"></button>
+        
+        <div class="debug-panel" id="debugPanel">
+            <div class="debug-header">
+                <span>DEBUG PANEL</span>
+                <button id="toggleDebug" class="toggle-btn">+</button>
+            </div>
+            <div class="debug-content hidden" id="debugContent">
+                <label for="speedSlider">Note Speed: <span id="speedValue">1.0x</span></label>
+                <input type="range" id="speedSlider" min="0.5" max="3.0" step="0.1" value="1.0">
+                <label for="delaySlider">Note Delay: <span id="delayValue">3.48</span> 秒</label>
+                <input type="range" id="delaySlider" min="-5.0" max="5.0" step="0.001" value="3.48">
+                <label for="greatSlider">Great Accuracy: <span id="greatValue">20</span> px</label>
+                <input type="range" id="greatSlider" min="0" max="50" step="1" value="20">
+                <label for="goodSlider">Good Accuracy: <span id="goodValue">40</span> px</label>
+                <input type="range" id="goodSlider" min="0" max="80" step="1" value="40">
+                <label for="badSlider">Bad Accuracy: <span id="badValue">55</span> px</label>
+                <input type="range" id="badSlider" min="0" max="100" step="1" value="55">
+                <label for="hitOffsetSlider">Accuracy Offset: <span id="hitOffsetValue">-4</span> px</label>
+                <input type="range" id="hitOffsetSlider" min="-100" max="100" step="1" value="-4">
+                <label for="musicVolumeSlider">Music Volume: <span id="musicVolumeValue">70</span>%</label>
+                <input type="range" id="musicVolumeSlider" min="0" max="100" step="1" value="70">
+                <label for="effectVolumeSlider">SFX Volume: <span id="effectVolumeValue">80</span>%</label>
+                <input type="range" id="effectVolumeSlider" min="0" max="100" step="1" value="80">
+                <div class="debug-buttons">
+                    <button id="applyDelayBtn" class="debug-btn">Apply Delay</button>
+                    <button id="applyAccuracyBtn" class="debug-btn">Apply Accuracy</button>
+                    <button id="applyOffsetBtn" class="debug-btn">Apply Offset</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="target-circle" id="targetCircle"></div>
+            <div class="circles-container" id="circlesContainer"></div>
+            <div class="dong-gif"></div>
+        </div>
+        
+        <div class="bg-mask"></div>
+        
+        <div class="key-overlay" id="keyOverlay"></div>
+        
+        <div class="instructions">
+            <p> </p>
+        </div>
+    </div>
+    
+    <audio id="bgMusic" preload="auto">
+        <source src="song.ogg" type="audio/ogg">
+    </audio>
+    
+    <script src="script.js"></script>
+</body>
+</html>
+

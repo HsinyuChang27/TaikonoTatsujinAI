@@ -1,0 +1,494 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: #000;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-screen.hidden {
+    display: none;
+}
+
+.loading-text {
+    font-size: 48px;
+    color: #000;
+    font-weight: bold;
+}
+
+.game-container {
+    position: relative;
+    width: 100vw;
+    height: 56.25vw; /* 16:9 比例 (9/16 = 0.5625) */
+    max-width: 177.78vh; /* 16:9 比例 (16/9 = 1.7778) */
+    max-height: 100vh;
+    margin: auto;
+    background: url('Resources/BG.jpg') center center / cover no-repeat;
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    --scale: 1; /* CSS变量，用于统一缩放比例 */
+}
+
+.start-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('Resources/Title.jpg') center center / cover no-repeat;
+    z-index: 2001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.start-screen.hidden {
+    display: none;
+}
+
+.start-btn {
+    position: absolute;
+    left: 83%;
+    top: 67%;
+    transform: translate(-50%, -50%);
+    width: calc(400px * 0.8 * var(--scale));
+    height: calc(160px * 0.8 * var(--scale));
+    padding: 0;
+    border: none;
+    background: url('Resources/StartButton.png') center center / contain no-repeat;
+    background-color: transparent;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.start-btn:hover {
+    opacity: 0.8;
+}
+
+.start-btn:active {
+    opacity: 0.6;
+}
+
+.restart-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    width: 240px;
+    height: 80px;
+    padding: 0;
+    border: none;
+    background: url('Resources/Restart.png') center center / contain no-repeat;
+    background-color: transparent;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.restart-btn:hover {
+    opacity: 0.8;
+}
+
+.restart-btn:active {
+    opacity: 0.6;
+}
+
+.game-area {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('Resources/BG_Mask.png') center center / cover no-repeat;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.key-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    pointer-events: none;
+    opacity: 0;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.key-overlay.show {
+    animation: keyOverlayAnimation 0.2s ease-out forwards;
+}
+
+@keyframes keyOverlayAnimation {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.target-circle {
+    position: absolute;
+    left: calc(20% + 200px * var(--scale));
+    top: 38%;
+    transform: translate(-50%, -50%);
+    width: calc(120px * var(--scale));
+    height: calc(120px * var(--scale));
+    background: url('Resources/Frame.png') center center / contain no-repeat;
+    z-index: 10;
+}
+
+.dong-gif {
+    position: absolute;
+    left: 17%;
+    top: 20%;
+    scale: 1.8;
+    transform: translate(-50%, -50%);
+    width: calc(200px * var(--scale));
+    height: calc(200px * var(--scale));
+    background: url('Resources/donggif.gif') center center / contain no-repeat;
+    z-index: 3000;
+    pointer-events: none;
+    display: none; /* 默认隐藏，开始游戏后显示 */
+}
+
+.dong-gif.show {
+    display: block;
+}
+
+
+.circles-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.moving-circle {
+    position: absolute;
+    width: calc(102px * var(--scale));
+    height: calc(102px * var(--scale));
+    border-radius: 50%;
+    transition: none;
+    z-index: 999;
+    transform: translateY(-50%);
+}
+
+.moving-circle.red {
+    background: url('Resources/Red.png') center center / contain no-repeat;
+}
+
+.moving-circle.blue {
+    background: url('Resources/Blue.png') center center / contain no-repeat;
+}
+
+.hit-effect {
+    animation: hitAnimation 0.8s ease-out forwards;
+}
+
+@keyframes hitAnimation {
+    0% {
+        transform: translateY(-50%) translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-50%) translateX(var(--target-x, 800px)) translateY(var(--target-y, -400px));
+        opacity: 0;
+    }
+}
+
+.miss-effect {
+    animation: missAnimation 0.5s ease-out;
+}
+
+@keyframes missAnimation {
+    0% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.5);
+    }
+}
+
+.instructions {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+}
+
+
+.great-icon {
+    position: absolute;
+    left: calc(20% + 200px * var(--scale));
+    top: 38%;
+    transform: translate(-50%, -50%) scale(1.75);
+    width: calc(120px * var(--scale));
+    height: calc(120px * var(--scale));
+    background: url('Resources/Great_icon.png') center center / contain no-repeat;
+    z-index: 998;
+    pointer-events: none;
+    animation: greatIconAnimation 0.4s ease-out forwards;
+}
+
+@keyframes greatIconAnimation {
+    0% {
+        opacity: 1;
+    }
+    25% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.great-text {
+    position: absolute;
+    left: calc(20% + 200px * var(--scale));
+    top: 38%;
+    transform: translate(-50%, -50%) translateY(calc(-140px * var(--scale))) scale(0.75);
+    width: calc(200px * var(--scale));
+    height: calc(100px * var(--scale));
+    background: url('Resources/Great.png') center center / contain no-repeat;
+    z-index: 1001;
+    pointer-events: none;
+    animation: greatTextAnimation 0.5s ease-out forwards;
+}
+
+.good-text {
+    position: absolute;
+    left: calc(20% + 200px * var(--scale));
+    top: 38%;
+    transform: translate(-50%, -50%) translateY(calc(-140px * var(--scale))) scale(0.75);
+    width: calc(200px * var(--scale));
+    height: calc(100px * var(--scale));
+    background: url('Resources/Good.png') center center / contain no-repeat;
+    z-index: 1001;
+    pointer-events: none;
+    animation: greatTextAnimation 0.5s ease-out forwards;
+}
+
+.bad-text {
+    position: absolute;
+    left: calc(20% + 200px * var(--scale));
+    top: 38%;
+    transform: translate(-50%, -50%) translateY(calc(-140px * var(--scale))) scale(0.75);
+    width: calc(200px * var(--scale));
+    height: calc(100px * var(--scale));
+    background: url('Resources/Bad.png') center center / contain no-repeat;
+    z-index: 1001;
+    pointer-events: none;
+    animation: greatTextAnimation 0.5s ease-out forwards;
+}
+
+@keyframes greatTextAnimation {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateY(calc(-140px * var(--scale))) scale(0.75);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) translateY(calc(-170px * var(--scale))) scale(0.75);
+    }
+}
+
+.debug-panel {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+    background: #000;
+    border: 1px solid #fff;
+    border-radius: 0;
+    min-width: 250px;
+    max-width: 300px;
+    box-shadow: none;
+    font-family: 'Courier New', monospace;
+}
+
+.debug-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #000;
+    border-bottom: 1px solid #fff;
+    border-radius: 0;
+    color: #fff;
+    font-weight: normal;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.toggle-btn {
+    background: #000;
+    border: 1px solid #fff;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    transition: none;
+}
+
+.toggle-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+.debug-content {
+    padding: 12px;
+    display: block;
+    background: #000;
+}
+
+.debug-content.hidden {
+    display: none;
+}
+
+.debug-content label {
+    display: block;
+    color: #fff;
+    font-size: 11px;
+    font-weight: normal;
+    margin-bottom: 8px;
+    text-shadow: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.debug-content #delayValue,
+.debug-content #speedValue {
+    color: #fff;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.debug-content input[type="range"] {
+    width: 100%;
+    height: 4px;
+    border-radius: 0;
+    background: #fff;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    margin-bottom: 12px;
+}
+
+.debug-content input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 0;
+    background: #fff;
+    border: 1px solid #000;
+    cursor: pointer;
+    box-shadow: none;
+    transition: none;
+}
+
+.debug-content input[type="range"]::-webkit-slider-thumb:hover {
+    background: #000;
+    border: 1px solid #fff;
+}
+
+.debug-content input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 0;
+    background: #fff;
+    border: 1px solid #000;
+    cursor: pointer;
+    box-shadow: none;
+    transition: none;
+}
+
+.debug-content input[type="range"]::-moz-range-thumb:hover {
+    background: #000;
+    border: 1px solid #fff;
+}
+
+.debug-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.debug-btn {
+    flex: 1;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: normal;
+    color: #fff;
+    background: #000;
+    border: 1px solid #fff;
+    border-radius: 0;
+    cursor: pointer;
+    box-shadow: none;
+    transition: none;
+    text-shadow: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Courier New', monospace;
+}
+
+.debug-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+.debug-btn:active {
+    background: #000;
+    color: #fff;
+}
+
