@@ -119,13 +119,98 @@ class MusicGame {
     }
     
     init() {
-        // 显示加载页面，10秒后隐藏
+        // 预加载所有资源
+        this.preloadResources();
+    }
+    
+    preloadResources() {
+        // 定义所有需要预加载的资源
+        const resources = [
+            // 图片资源
+            'Resources/BG.jpg',
+            'Resources/Title.jpg',
+            'Resources/StartButton.png',
+            'Resources/Restart.png',
+            'Resources/Frame.png',
+            'Resources/Red.png',
+            'Resources/Blue.png',
+            'Resources/Great_icon.png',
+            'Resources/Great.png',
+            'Resources/Good.png',
+            'Resources/Bad.png',
+            'Resources/BG_Mask.png',
+            'Resources/donggif.gif',
+            // 音频资源
+            'song.ogg',
+            'Resources/dong.ogg',
+            'Resources/ka.ogg'
+        ];
+        
+        let loadedCount = 0;
+        const totalResources = resources.length;
         const loadingScreen = document.getElementById('loadingScreen');
-        if (loadingScreen) {
-            setTimeout(() => {
+        const progressBar = document.getElementById('loadingProgressBar');
+        const loadingPercentage = document.getElementById('loadingPercentage');
+        
+        // 更新进度
+        const updateProgress = () => {
+            const percentage = Math.round((loadedCount / totalResources) * 100);
+            if (progressBar) {
+                progressBar.style.width = percentage + '%';
+            }
+            if (loadingPercentage) {
+                loadingPercentage.textContent = percentage + '%';
+            }
+        };
+        
+        // 加载单个资源
+        const loadResource = (url) => {
+            return new Promise((resolve, reject) => {
+                if (url.endsWith('.ogg')) {
+                    // 音频资源
+                    const audio = new Audio();
+                    audio.preload = 'auto';
+                    audio.oncanplaythrough = () => {
+                        loadedCount++;
+                        updateProgress();
+                        resolve();
+                    };
+                    audio.onerror = () => {
+                        loadedCount++;
+                        updateProgress();
+                        resolve(); // 即使失败也继续
+                    };
+                    audio.src = url;
+                } else {
+                    // 图片资源
+                    const img = new Image();
+                    img.onload = () => {
+                        loadedCount++;
+                        updateProgress();
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        loadedCount++;
+                        updateProgress();
+                        resolve(); // 即使失败也继续
+                    };
+                    img.src = url;
+                }
+            });
+        };
+        
+        // 加载所有资源
+        Promise.all(resources.map(loadResource)).then(() => {
+            // 所有资源加载完成，初始化游戏
+            this.initializeGame();
+            // 隐藏加载页面
+            if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
-            }, 10000); // 10秒延迟
-        }
+            }
+        });
+    }
+    
+    initializeGame() {
         // 初始化背景音乐
         this.bgMusic = document.getElementById('bgMusic');
         if (this.bgMusic) {

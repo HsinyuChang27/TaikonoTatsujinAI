@@ -33,8 +33,36 @@ body {
     display: none;
 }
 
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
 .loading-text {
     font-size: 48px;
+    color: #000;
+    font-weight: bold;
+}
+
+.loading-progress-container {
+    width: 400px;
+    height: 20px;
+    background: #ddd;
+    border: 2px solid #000;
+    overflow: hidden;
+}
+
+.loading-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #000;
+    transition: width 0.3s ease;
+}
+
+.loading-percentage {
+    font-size: 24px;
     color: #000;
     font-weight: bold;
 }
